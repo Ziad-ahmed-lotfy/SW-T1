@@ -1,93 +1,107 @@
 import java.util.Scanner;
 
-public class ArrayMenuProgram {
-
-    public static void displayArray(int[] arr, int size) {
-        if (size == 0) {
-            System.out.println("Array is empty.");
-            return;
-        }
-
-        System.out.println("Array contents:");
-        for (int i = 0; i < size; i++) {
-            System.out.print(arr[i] + " ");
-        }
-        System.out.println();
-    }
-
+public class ClothesStore {
     public static void main(String[] args) {
-
         Scanner input = new Scanner(System.in);
-        int[] arr = new int[100];
-        int size = 0;
+        Product[] store = new Product[50];
+        int count = 0;
         int choice;
 
         do {
-            System.out.println("\n--- MENU ---");
-            System.out.println("1. Insert number");
-            System.out.println("2. Delete number");
-            System.out.println("3. Get value at index");
-            System.out.println("4. Display array");
-            System.out.println("5. Exit");
-            System.out.print("Enter choice: ");
+            System.out.println("\n=== Clothes Store Menu ===");
+            System.out.println("1. Add Product");
+            System.out.println("2. Display Products");
+            System.out.println("3. Search Product");
+            System.out.println("4. Delete Product");
+            System.out.println("5. Buy Product");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
 
             choice = input.nextInt();
+            input.nextLine();
 
             switch (choice) {
-
                 case 1:
-                    if (size == arr.length) {
-                        System.out.println("Array is full!");
-                        break;
+                    if (count < store.length) {
+                        System.out.print("Enter clothes type: ");
+                        String type = input.nextLine();
+                        System.out.print("Enter price: ");
+                        double price = input.nextDouble();
+                        System.out.print("Enter quantity: ");
+                        int quantity = input.nextInt();
+                        input.nextLine();
+                        store[count] = new Product(type, price, quantity);
+                        count++;
+                        System.out.println("Product added successfully.");
+                    } else {
+                        System.out.println("Store is full.");
                     }
-
-                    System.out.print("Enter number to insert: ");
-                    int num = input.nextInt();
-
-                    arr[size] = num;
-                    size++;
-
-                    System.out.println("Number inserted.");
                     break;
 
                 case 2:
-                    System.out.print("Enter number to delete: ");
-                    int del = input.nextInt();
-                    boolean found = false;
-
-                    for (int i = 0; i < size; i++) {
-                        if (arr[i] == del) {
-                            for (int j = i; j < size - 1; j++) {
-                                arr[j] = arr[j + 1];
-                            }
-                            size--;
-                            found = true;
-                            System.out.println("Number deleted.");
-                            break;
+                    if (count == 0) System.out.println("No products available.");
+                    else {
+                        System.out.println("\n--- Product List ---");
+                        for (int i = 0; i < count; i++) {
+                            System.out.println("Product #" + (i + 1));
+                            store[i].display();
                         }
-                    }
-
-                    if (!found) {
-                        System.out.println("Number not found.");
                     }
                     break;
 
                 case 3:
-                    System.out.print("Enter index: ");
-                    int index = input.nextInt();
-
-                    if (index >= 0 && index < size) {
-                        System.out.println("Value at index " + index + " is: " + arr[index]);
-                    } else {
-                        System.out.println("Invalid index.");
+                    System.out.print("Enter product type to search: ");
+                    String searchType = input.nextLine();
+                    boolean found = false;
+                    for (int i = 0; i < count; i++) {
+                        if (store[i].type.equalsIgnoreCase(searchType)) {
+                            found = true;
+                            System.out.println("\nProduct Found:");
+                            store[i].display();
+                            break;
+                        }
                     }
+                    if (!found) System.out.println("Product not found.");
                     break;
 
                 case 4:
-                    displayArray(arr, size);
+                    System.out.print("Enter product type to delete: ");
+                    String deleteType = input.nextLine();
+                    boolean deleted = false;
+                    for (int i = 0; i < count; i++) {
+                        if (store[i].type.equalsIgnoreCase(deleteType)) {
+                            for (int j = i; j < count - 1; j++) store[j] = store[j + 1];
+                            store[count - 1] = null;
+                            count--;
+                            deleted = true;
+                            System.out.println("Product deleted successfully.");
+                            break;
+                        }
+                    }
+                    if (!deleted) System.out.println("Product not found.");
                     break;
 
                 case 5:
+                    System.out.print("Enter product type to buy: ");
+                    String buyType = input.nextLine();
+                    boolean bought = false;
+                    for (int i = 0; i < count; i++) {
+                        if (store[i].type.equalsIgnoreCase(buyType)) {
+                            bought = true;
+                            if (store[i].quantity > 0) {
+                                store[i].quantity--;
+                                System.out.println("You bought 1 " + store[i].type);
+                                System.out.println("Remaining stock: " + store[i].quantity);
+                            } else {
+                                System.out.println("Sorry, this product is OUT OF STOCK.");
+                            }
+                            break;
+                        }
+                    }
+                    if (!bought) System.out.println("Product not found.");
+                    break;
+
+                case 6:
                     System.out.println("Exiting program...");
                     break;
 
@@ -95,8 +109,29 @@ public class ArrayMenuProgram {
                     System.out.println("Invalid choice.");
             }
 
-        } while (choice != 5);
+        } while (choice != 6);
 
         input.close();
+    }
+}
+
+class Product {
+    String type;
+    double price;
+    int quantity;
+
+    Product(String type, double price, int quantity) {
+        this.type = type;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    void display() {
+        System.out.println("Type: " + type);
+        System.out.println("Price: $" + price);
+        System.out.println("Number of Items: " + quantity);
+        if (quantity == 0) System.out.println("Status: Out of Stock");
+        else System.out.println("Status: In Stock");
+        System.out.println("-----------------------");
     }
 }
